@@ -31,8 +31,9 @@
     },
     "extra": {
       "eas": {
-        "projectId": "your-project-id"
+        "projectId": "9c73f4ad-1323-4c1a-bff6-3e61d9ace12e"
       }
-    }
+    },
+    "owner": "kutxyt"
   }
 }
