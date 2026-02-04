@@ -1,4 +1,5 @@
 .idea
+android
 ios
 *.png.icloud
 .DS_Store
@@ -10,3 +11,4 @@ Capture*
 public
 vercel.json
 privacy-policy.html
+node_modules
