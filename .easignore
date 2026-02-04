@@ -1,10 +1,12 @@
 .idea
-android
 ios
 *.png.icloud
 .DS_Store
 *.log
 error.png
 Capture*
-node_modules
 .expo
+*.md
+public
+vercel.json
+privacy-policy.html
