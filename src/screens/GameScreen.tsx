@@ -8,6 +8,7 @@ import {
   Animated,
   ActivityIndicator,
   Alert,
+  Platform,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { getCurrentUser, updateUserXp } from "../lib/auth";
@@ -917,5 +918,3 @@ const styles = StyleSheet.create({
     fontWeight: fontWeight.medium,
   },
 });
-
-import { Platform } from "react-native";
