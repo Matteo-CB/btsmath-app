@@ -1,6 +1,7 @@
 {
   "cli": {
-    "version": ">= 5.0.0"
+    "version": ">= 5.0.0",
+    "appVersionSource": "local"
   },
   "build": {
     "development": {
@@ -16,6 +17,10 @@
     "production": {
       "android": {
         "buildType": "app-bundle"
+      },
+      "env": {
+        "EXPO_PUBLIC_SUPABASE_URL": "https://xqvbrkwqbcxmhihbiggt.supabase.co",
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhxdmJya3dxYmN4bWhpaGJpZ2d0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAxNzMyMDMsImV4cCI6MjA4NTc0OTIwM30.wGa7hqRlf3pYAwpWFDHvOQ6Q1o4nWtG4B5W72KI6njk"
       }
     }
   },
