@@ -1,5 +1,5 @@
 import { supabase } from "./supabase";
-import * as SecureStore from "expo-secure-store";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import type { User } from "./types";
 
 const USER_ID_KEY = "btsmath_user_id";
@@ -35,7 +35,7 @@ export async function createUser(username: string, password: string): Promise<{ 
     return { success: false, error: error.message };
   }
 
-  await SecureStore.setItemAsync(USER_ID_KEY, String(data.id));
+  await AsyncStorage.setItem(USER_ID_KEY, String(data.id));
   return { success: true, user: data as User };
 }
 
@@ -53,7 +53,7 @@ export async function authenticateUser(username: string, password: string): Prom
     return { success: false, error: "Identifiants incorrects" };
   }
 
-  await SecureStore.setItemAsync(USER_ID_KEY, String(data.id));
+  await AsyncStorage.setItem(USER_ID_KEY, String(data.id));
 
   // Update streak
   await updateStreak(data.id);
@@ -62,7 +62,7 @@ export async function authenticateUser(username: string, password: string): Prom
 }
 
 export async function getCurrentUser(): Promise<User | null> {
-  const userId = await SecureStore.getItemAsync(USER_ID_KEY);
+  const userId = await AsyncStorage.getItem(USER_ID_KEY);
   if (!userId) return null;
   return getUserById(parseInt(userId));
 }
@@ -121,5 +121,5 @@ export async function updateStreak(userId: number): Promise<void> {
 }
 
 export async function logout(): Promise<void> {
-  await SecureStore.deleteItemAsync(USER_ID_KEY);
+  await AsyncStorage.removeItem(USER_ID_KEY);
 }

@@ -13,6 +13,7 @@ import GameScreen from "./src/screens/GameScreen";
 import LeaderboardScreen from "./src/screens/LeaderboardScreen";
 import ProfileScreen from "./src/screens/ProfileScreen";
 import FlashcardsScreen from "./src/screens/FlashcardsScreen";
+import CoursesScreen from "./src/screens/CoursesScreen";
 import { getCurrentUser } from "./src/lib/auth";
 import { colors } from "./src/components/theme";
 import type { GameMode } from "./src/lib/types";
@@ -30,6 +31,7 @@ export type AuthStackParamList = {
 
 export type MainTabParamList = {
   Dashboard: undefined;
+  Courses: undefined;
   Flashcards: undefined;
   Leaderboard: undefined;
   Profile: undefined;
@@ -97,6 +99,9 @@ function MainTabNavigator({
             case "Dashboard":
               iconName = focused ? "home" : "home-outline";
               break;
+            case "Courses":
+              iconName = focused ? "book" : "book-outline";
+              break;
             case "Flashcards":
               iconName = focused ? "albums" : "albums-outline";
               break;
@@ -117,6 +122,11 @@ function MainTabNavigator({
       <MainTab.Screen name="Dashboard" options={{ tabBarLabel: "Accueil" }}>
         {() => <DashboardScreen onLogout={onLogout} onStartGame={onStartGame} />}
       </MainTab.Screen>
+      <MainTab.Screen
+        name="Courses"
+        component={CoursesScreen}
+        options={{ tabBarLabel: "Cours" }}
+      />
       <MainTab.Screen
         name="Flashcards"
         component={FlashcardsScreen}
