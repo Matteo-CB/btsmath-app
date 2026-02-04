@@ -1,0 +1,6 @@
+.idea
+*.png.icloud
+.DS_Store
+*.log
+error.png
+Capture*
