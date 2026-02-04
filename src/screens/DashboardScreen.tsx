@@ -14,13 +14,15 @@ import { getDailyQuests, getHighScores } from "../lib/db";
 import { GAME_MODES } from "../lib/types";
 import type { User, GameMode } from "../lib/types";
 import { colors, spacing, borderRadius, fontSize, fontWeight } from "../components/theme";
+import { COURSES } from "../lib/courses";
 
 interface Props {
   onLogout: () => void;
   onStartGame: (mode: GameMode) => void;
+  onGoToCourses?: () => void;
 }
 
-export default function DashboardScreen({ onLogout, onStartGame }: Props) {
+export default function DashboardScreen({ onLogout, onStartGame, onGoToCourses }: Props) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -103,6 +105,43 @@ export default function DashboardScreen({ onLogout, onStartGame }: Props) {
       </LinearGradient>
 
       <View style={styles.content}>
+        {/* Courses Section */}
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>📚 Continuer à apprendre</Text>
+            {onGoToCourses && (
+              <TouchableOpacity onPress={onGoToCourses} style={styles.seeAllButton}>
+                <Text style={styles.seeAllText}>Voir tout →</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.coursesScroll}>
+            {COURSES.map((course) => {
+              const totalLessons = course.lessons.length;
+              const totalDuration = course.lessons.reduce((sum, l) => sum + l.duration, 0);
+              return (
+                <TouchableOpacity
+                  key={course.id}
+                  style={styles.courseCard}
+                  onPress={onGoToCourses}
+                >
+                  <View style={[styles.courseTopBar, { backgroundColor: course.color }]} />
+                  <View style={[styles.courseIcon, { backgroundColor: course.color }]}>
+                    <Text style={styles.courseIconText}>{course.icon}</Text>
+                  </View>
+                  <Text style={styles.courseName} numberOfLines={1}>{course.name}</Text>
+                  <Text style={styles.courseDesc} numberOfLines={2}>{course.description}</Text>
+                  <View style={styles.courseMeta}>
+                    <Text style={styles.courseMetaText}>📖 {totalLessons} leçons</Text>
+                    <Text style={styles.courseMetaText}>⏱️ {totalDuration} min</Text>
+                  </View>
+                </TouchableOpacity>
+              );
+            })}
+          </ScrollView>
+        </View>
+
         {/* Game Modes */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
@@ -396,5 +435,70 @@ const styles = StyleSheet.create({
   logoutText: {
     fontSize: fontSize.sm,
     color: colors.textSecondary,
+  },
+  seeAllButton: {
+    backgroundColor: colors.primary,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xs,
+    borderRadius: borderRadius.full,
+  },
+  seeAllText: {
+    color: "#fff",
+    fontSize: fontSize.xs,
+    fontWeight: fontWeight.semibold,
+  },
+  coursesScroll: {
+    marginHorizontal: -spacing.lg,
+    paddingHorizontal: spacing.lg,
+  },
+  courseCard: {
+    width: 180,
+    backgroundColor: colors.surface,
+    borderRadius: borderRadius.lg,
+    padding: spacing.md,
+    marginRight: spacing.sm,
+    borderWidth: 1,
+    borderColor: colors.border,
+    position: "relative",
+    overflow: "hidden",
+  },
+  courseTopBar: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 4,
+  },
+  courseIcon: {
+    width: 44,
+    height: 44,
+    borderRadius: borderRadius.md,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: spacing.sm,
+  },
+  courseIconText: {
+    fontSize: fontSize.xl,
+    color: "#fff",
+  },
+  courseName: {
+    fontSize: fontSize.md,
+    fontWeight: fontWeight.bold,
+    color: colors.text,
+    marginBottom: spacing.xs,
+  },
+  courseDesc: {
+    fontSize: fontSize.xs,
+    color: colors.textSecondary,
+    lineHeight: 16,
+    marginBottom: spacing.sm,
+  },
+  courseMeta: {
+    flexDirection: "row",
+    gap: spacing.sm,
+  },
+  courseMetaText: {
+    fontSize: 10,
+    color: colors.textMuted,
   },
 });
