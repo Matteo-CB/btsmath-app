@@ -9,7 +9,18 @@ import {
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { colors, spacing, borderRadius, fontSize, fontWeight } from "../components/theme";
-import { COURSES, getCourseById, getTotalLessons, type Course, type Lesson } from "../lib/courses";
+import { COURSES, getCourseById, getTotalLessons, type Course, type Lesson, type LessonContent } from "../lib/courses";
+import {
+  MatrixDisplay,
+  MatrixCalculator,
+  TruthTable,
+  LogicGateVisualizer,
+  BaseConverter,
+  BinaryVisualizer,
+  QuickQuiz,
+  MiniExercise,
+  StepByStep,
+} from "../components/courses";
 
 type ViewMode = "list" | "course" | "lesson";
 
@@ -209,6 +220,8 @@ function LessonView({
         return { borderColor: "#ef4444", backgroundColor: "#fef2f2" };
       case "formula":
         return { borderColor: "#0f0f0f", backgroundColor: "#0f0f0f" };
+      case "interactive":
+        return { borderColor: colors.primary, backgroundColor: "#fff7ed" };
       default:
         return { borderColor: "#e5e5e5", backgroundColor: "#f8fafc" };
     }
@@ -223,7 +236,81 @@ function LessonView({
       case "method": return "🔧 Méthode";
       case "warning": return "⚠️ Attention";
       case "formula": return "📝 Formule";
+      case "interactive": return "🎮 Interactif";
       default: return "📄 Note";
+    }
+  };
+
+  const renderInteractiveContent = (item: LessonContent) => {
+    if (item.type !== "interactive" || !item.interactive) return null;
+
+    const interactiveData = item.interactive;
+
+    switch (interactiveData.type) {
+      case "matrix_display":
+        return (
+          <MatrixDisplay
+            matrix={interactiveData.matrix || [[0]]}
+            label={interactiveData.label}
+          />
+        );
+      case "matrix_calculator":
+        const matrixMode = interactiveData.mode as "add" | "multiply" | "determinant" | "transpose" | undefined;
+        return (
+          <MatrixCalculator
+            mode={matrixMode || "add"}
+            matrixA={interactiveData.matrixA}
+            matrixB={interactiveData.matrixB}
+          />
+        );
+      case "truth_table":
+        return (
+          <TruthTable
+            variables={interactiveData.variables || ["A", "B"]}
+            expression={interactiveData.expression || "A ET B"}
+            interactive={interactiveData.interactive}
+          />
+        );
+      case "logic_gate":
+        const gateType = interactiveData.gate as "AND" | "OR" | "NOT" | "XOR" | "NAND" | "NOR" | undefined;
+        return (
+          <LogicGateVisualizer
+            gate={gateType || "AND"}
+            inputs={interactiveData.inputs || [true, false]}
+          />
+        );
+      case "base_converter":
+        const baseMode = interactiveData.mode as "full" | "binary" | "hex" | undefined;
+        return <BaseConverter mode={baseMode || "full"} />;
+      case "binary_visualizer":
+        return <BinaryVisualizer value={interactiveData.value || 42} bits={interactiveData.bits || 8} />;
+      case "quick_quiz":
+        return (
+          <QuickQuiz
+            questions={interactiveData.questions || []}
+            title={interactiveData.title}
+          />
+        );
+      case "mini_exercise":
+        return (
+          <MiniExercise
+            question={interactiveData.question || ""}
+            answer={interactiveData.answer || ""}
+            hint={interactiveData.hint}
+            inputType={interactiveData.inputType}
+          />
+        );
+      case "step_by_step":
+        return (
+          <StepByStep
+            title={interactiveData.title || "Étapes"}
+            steps={interactiveData.steps || []}
+            autoPlay={interactiveData.autoPlay}
+            speed={interactiveData.speed}
+          />
+        );
+      default:
+        return null;
     }
   };
 
@@ -260,6 +347,7 @@ function LessonView({
         {lesson.content.map((item, index) => {
           const contentStyle = getContentStyle(item.type);
           const isFormula = item.type === "formula";
+          const isInteractive = item.type === "interactive";
 
           return (
             <View
@@ -270,6 +358,7 @@ function LessonView({
                   borderLeftColor: contentStyle.borderColor,
                   backgroundColor: contentStyle.backgroundColor,
                 },
+                isInteractive && styles.interactiveCard,
               ]}
             >
               <Text style={[styles.contentType, isFormula && { color: "#a0a0a0" }]}>
@@ -280,9 +369,12 @@ function LessonView({
                   {item.title}
                 </Text>
               )}
-              <Text style={[styles.contentText, isFormula && { color: "#e0e0e0" }]}>
-                {item.content}
-              </Text>
+              {!isInteractive && (
+                <Text style={[styles.contentText, isFormula && { color: "#e0e0e0" }]}>
+                  {item.content}
+                </Text>
+              )}
+              {isInteractive && renderInteractiveContent(item)}
               {item.formula && (
                 <View style={styles.formulaBox}>
                   <Text style={styles.formulaText}>{item.formula}</Text>
@@ -539,6 +631,13 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
     borderLeftWidth: 4,
     borderRadius: borderRadius.sm,
+  },
+  interactiveCard: {
+    borderLeftWidth: 0,
+    borderWidth: 1,
+    borderColor: colors.primary,
+    padding: spacing.sm,
+    backgroundColor: "transparent",
   },
   contentType: {
     fontSize: fontSize.xs,

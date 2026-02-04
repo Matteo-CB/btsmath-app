@@ -6,11 +6,39 @@ export interface Lesson {
   content: LessonContent[];
 }
 
+export interface InteractiveContent {
+  type: string;
+  mode?: "add" | "multiply" | "determinant" | "transpose" | "full" | "binary" | "hex";
+  matrix?: number[][];
+  matrixA?: number[][];
+  matrixB?: number[][];
+  label?: string;
+  showIndices?: boolean;
+  variables?: string[];
+  expression?: string;
+  showResult?: boolean;
+  interactive?: boolean;
+  gate?: "AND" | "OR" | "NOT" | "XOR" | "NAND" | "NOR";
+  inputs?: boolean[];
+  value?: number;
+  bits?: number;
+  questions?: { question: string; options: string[]; correct: number; explanation?: string }[];
+  question?: string;
+  answer?: string;
+  hint?: string;
+  inputType?: "text" | "number";
+  steps?: { title: string; content: string; highlight?: string }[];
+  autoPlay?: boolean;
+  speed?: number;
+  title?: string;
+}
+
 export interface LessonContent {
-  type: "definition" | "theorem" | "property" | "example" | "method" | "warning" | "formula" | "table";
+  type: "definition" | "theorem" | "property" | "example" | "method" | "warning" | "formula" | "table" | "interactive";
   title?: string;
   content: string;
   formula?: string;
+  interactive?: InteractiveContent;
 }
 
 export interface Course {
@@ -58,6 +86,39 @@ export const COURSES: Course[] = [
             type: "definition",
             title: "Matrice carrée",
             content: "Une matrice carrée est une matrice qui a autant de lignes que de colonnes (n = p)."
+          },
+          {
+            type: "interactive",
+            title: "Visualisation d'une matrice",
+            content: "Voici une matrice 2×3 avec ses éléments.",
+            interactive: {
+              type: "matrix_display",
+              matrix: [[1, 2, 3], [4, 5, 6]],
+              label: "A"
+            }
+          },
+          {
+            type: "interactive",
+            title: "Testez vos connaissances",
+            content: "Répondez à ces questions pour vérifier votre compréhension.",
+            interactive: {
+              type: "quiz",
+              title: "Quiz - Introduction aux matrices",
+              questions: [
+                {
+                  question: "Combien de lignes possède une matrice de type 3×4 ?",
+                  options: ["3", "4", "7", "12"],
+                  correct: 0,
+                  explanation: "Dans une matrice n×p, n représente le nombre de lignes. Ici n=3."
+                },
+                {
+                  question: "Dans une matrice A, que représente le coefficient a₂₃ ?",
+                  options: ["Ligne 3, colonne 2", "Ligne 2, colonne 3", "L'élément 23", "La somme 2+3"],
+                  correct: 1,
+                  explanation: "Le premier indice (2) représente la ligne, le second (3) la colonne."
+                }
+              ]
+            }
           }
         ]
       },
@@ -134,6 +195,29 @@ export const COURSES: Course[] = [
             type: "method",
             title: "Méthode de calcul",
             content: "Pour calculer cᵢⱼ : prendre la ligne i de A et la colonne j de B, multiplier terme à terme et additionner."
+          },
+          {
+            type: "interactive",
+            title: "Calculateur de multiplication",
+            content: "Modifiez les matrices et calculez leur produit.",
+            interactive: {
+              type: "matrix_calculator",
+              mode: "multiply",
+              matrixA: [[1, 2], [3, 4]],
+              matrixB: [[5, 6], [7, 8]]
+            }
+          },
+          {
+            type: "interactive",
+            title: "Exercice pratique",
+            content: "",
+            interactive: {
+              type: "exercise",
+              question: "Calculez c₁₁ du produit [[2, 1], [0, 3]] × [[1, 4], [2, 5]]",
+              answer: "4",
+              hint: "c₁₁ = (2×1) + (1×2)",
+              inputType: "number"
+            }
           }
         ]
       },
@@ -353,6 +437,40 @@ export const COURSES: Course[] = [
             type: "definition",
             title: "OU (disjonction)",
             content: "p ∨ q est vraie si au moins l'une est vraie."
+          },
+          {
+            type: "interactive",
+            title: "Table de vérité - ET",
+            content: "Complétez la table de vérité de l'opération ET.",
+            interactive: {
+              type: "truth_table",
+              variables: ["p", "q"],
+              expression: "p ∧ q",
+              showResult: false,
+              interactive: true
+            }
+          },
+          {
+            type: "interactive",
+            title: "Table de vérité - OU",
+            content: "Complétez la table de vérité de l'opération OU.",
+            interactive: {
+              type: "truth_table",
+              variables: ["p", "q"],
+              expression: "p ∨ q",
+              showResult: false,
+              interactive: true
+            }
+          },
+          {
+            type: "interactive",
+            title: "Porte logique AND",
+            content: "Visualisez le fonctionnement d'une porte AND.",
+            interactive: {
+              type: "logic_gate",
+              gate: "AND",
+              inputs: [true, true]
+            }
           }
         ]
       },
@@ -522,6 +640,25 @@ export const COURSES: Course[] = [
             type: "method",
             title: "Base b vers base 10",
             content: "Multiplier chaque chiffre par sa puissance de b et additionner."
+          },
+          {
+            type: "interactive",
+            title: "Visualisation binaire",
+            content: "Voici 42 en binaire sur 8 bits.",
+            interactive: {
+              type: "binary_visualizer",
+              value: 42,
+              bits: 8
+            }
+          },
+          {
+            type: "interactive",
+            title: "Convertisseur de bases",
+            content: "Convertissez des nombres entre différentes bases.",
+            interactive: {
+              type: "base_converter",
+              mode: "full"
+            }
           }
         ]
       }
