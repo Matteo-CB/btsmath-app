@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -8,6 +8,7 @@ import {
   SafeAreaView,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
+import { useRoute } from "@react-navigation/native";
 import { colors, spacing, borderRadius, fontSize, fontWeight } from "../components/theme";
 import { COURSES, getCourseById, getTotalLessons, type Course, type Lesson, type LessonContent } from "../lib/courses";
 import {
@@ -25,9 +26,22 @@ import {
 type ViewMode = "list" | "course" | "lesson";
 
 export default function CoursesScreen() {
+  const route = useRoute();
   const [viewMode, setViewMode] = useState<ViewMode>("list");
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
+
+  // Open a specific course when navigated from Dashboard
+  useEffect(() => {
+    const params = route.params as { courseId?: string } | undefined;
+    if (params?.courseId) {
+      const course = getCourseById(params.courseId);
+      if (course) {
+        setSelectedCourse(course);
+        setViewMode("course");
+      }
+    }
+  }, [route.params]);
 
   const handleSelectCourse = (course: Course) => {
     setSelectedCourse(course);

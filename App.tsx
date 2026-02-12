@@ -31,7 +31,7 @@ export type AuthStackParamList = {
 
 export type MainTabParamList = {
   Dashboard: undefined;
-  Courses: undefined;
+  Courses: { courseId?: string } | undefined;
   Flashcards: undefined;
   Leaderboard: undefined;
   Profile: undefined;
@@ -120,7 +120,14 @@ function MainTabNavigator({
       })}
     >
       <MainTab.Screen name="Dashboard" options={{ tabBarLabel: "Accueil" }}>
-        {() => <DashboardScreen onLogout={onLogout} onStartGame={onStartGame} />}
+        {({ navigation }) => (
+          <DashboardScreen
+            onLogout={onLogout}
+            onStartGame={onStartGame}
+            onGoToCourses={() => navigation.navigate("Courses")}
+            onGoToCourse={(courseId: string) => navigation.navigate("Courses", { courseId })}
+          />
+        )}
       </MainTab.Screen>
       <MainTab.Screen
         name="Courses"

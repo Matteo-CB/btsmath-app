@@ -20,9 +20,10 @@ interface Props {
   onLogout: () => void;
   onStartGame: (mode: GameMode) => void;
   onGoToCourses?: () => void;
+  onGoToCourse?: (courseId: string) => void;
 }
 
-export default function DashboardScreen({ onLogout, onStartGame, onGoToCourses }: Props) {
+export default function DashboardScreen({ onLogout, onStartGame, onGoToCourses, onGoToCourse }: Props) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -107,14 +108,14 @@ export default function DashboardScreen({ onLogout, onStartGame, onGoToCourses }
       <View style={styles.content}>
         {/* Courses Section */}
         <View style={styles.section}>
-          <View style={styles.sectionHeader}>
+          <TouchableOpacity
+            style={styles.sectionHeader}
+            onPress={onGoToCourses}
+            activeOpacity={0.7}
+          >
             <Text style={styles.sectionTitle}>📚 Continuer à apprendre</Text>
-            {onGoToCourses && (
-              <TouchableOpacity onPress={onGoToCourses} style={styles.seeAllButton}>
-                <Text style={styles.seeAllText}>Voir tout →</Text>
-              </TouchableOpacity>
-            )}
-          </View>
+            <Text style={styles.sectionArrow}>→</Text>
+          </TouchableOpacity>
 
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.coursesScroll}>
             {COURSES.map((course) => {
@@ -124,7 +125,8 @@ export default function DashboardScreen({ onLogout, onStartGame, onGoToCourses }
                 <TouchableOpacity
                   key={course.id}
                   style={styles.courseCard}
-                  onPress={onGoToCourses}
+                  onPress={() => onGoToCourse?.(course.id)}
+                  activeOpacity={0.7}
                 >
                   <View style={[styles.courseTopBar, { backgroundColor: course.color }]} />
                   <View style={[styles.courseIcon, { backgroundColor: course.color }]}>
@@ -436,16 +438,10 @@ const styles = StyleSheet.create({
     fontSize: fontSize.sm,
     color: colors.textSecondary,
   },
-  seeAllButton: {
-    backgroundColor: colors.primary,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.xs,
-    borderRadius: borderRadius.full,
-  },
-  seeAllText: {
-    color: "#fff",
-    fontSize: fontSize.xs,
-    fontWeight: fontWeight.semibold,
+  sectionArrow: {
+    fontSize: fontSize.xl,
+    color: colors.primary,
+    fontWeight: fontWeight.bold,
   },
   coursesScroll: {
     marginHorizontal: -spacing.lg,
