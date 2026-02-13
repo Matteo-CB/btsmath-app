@@ -7,6 +7,7 @@ import {
   RefreshControl,
   ActivityIndicator,
 } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { getCurrentUser } from "../lib/auth";
 import { getGlobalLeaderboard, getWeeklyLeaderboard, getUserRank } from "../lib/db";
@@ -74,7 +75,7 @@ export default function LeaderboardScreen() {
     >
       {/* Hero */}
       <LinearGradient colors={["#1e293b", "#334155", "#475569"]} style={styles.hero}>
-        <Text style={styles.heroIcon}>🏆</Text>
+        <Ionicons name="trophy" size={60} color="#fbbf24" />
         <Text style={styles.heroTitle}>Classement</Text>
         <Text style={styles.heroSubtitle}>Les meilleurs mathématiciens du BTS SIO</Text>
 
@@ -93,14 +94,16 @@ export default function LeaderboardScreen() {
           <TouchableTab
             active={activeTab === "global"}
             onPress={() => setActiveTab("global")}
-            label="🌍 Global"
+            label="Global"
+            iconName="globe"
             badge="XP Total"
             badgeColor="#FF5722"
           />
           <TouchableTab
             active={activeTab === "weekly"}
             onPress={() => setActiveTab("weekly")}
-            label="📅 Cette semaine"
+            label="Cette semaine"
+            iconName="calendar"
             badge="7 jours"
             badgeColor="#10b981"
           />
@@ -161,9 +164,18 @@ export default function LeaderboardScreen() {
                   <Text style={styles.leaderboardName}>
                     {player.username} {isCurrentUser && <Text style={styles.youText}>(vous)</Text>}
                   </Text>
-                  <Text style={styles.leaderboardLevel}>
-                    Niveau {player.level} {player.streak ? `• 🔥 ${player.streak}` : ""}
-                  </Text>
+                  <View style={{flexDirection:'row',alignItems:'center',gap:3}}>
+                    <Text style={styles.leaderboardLevel}>
+                      Niveau {player.level}
+                    </Text>
+                    {player.streak > 0 && (
+                      <View style={{flexDirection:'row',alignItems:'center',gap:2}}>
+                        <Text style={styles.leaderboardLevel}>•</Text>
+                        <Ionicons name="flame" size={12} color="#f97316" />
+                        <Text style={styles.leaderboardLevel}>{player.streak}</Text>
+                      </View>
+                    )}
+                  </View>
                 </View>
                 <Text style={[styles.leaderboardXp, { color: activeTab === "global" ? "#FF5722" : "#10b981" }]}>
                   {activeTab === "global" ? player.xp?.toLocaleString() : `+${player.weeklyXp?.toLocaleString()}`} XP
@@ -185,19 +197,23 @@ export default function LeaderboardScreen() {
   );
 }
 
-function TouchableTab({ active, onPress, label, badge, badgeColor }: {
+function TouchableTab({ active, onPress, label, badge, badgeColor, iconName }: {
   active: boolean;
   onPress: () => void;
   label: string;
   badge: string;
   badgeColor: string;
+  iconName?: string;
 }) {
   return (
     <TouchableOpacity
       style={[styles.tab, active && styles.tabActive]}
       onPress={onPress}
     >
-      <Text style={[styles.tabText, active && styles.tabTextActive]}>{label}</Text>
+      <View style={{flexDirection:'row',alignItems:'center',gap:4}}>
+        {iconName && <Ionicons name={iconName as any} size={16} color={active ? colors.primary : colors.textSecondary} />}
+        <Text style={[styles.tabText, active && styles.tabTextActive]}>{label}</Text>
+      </View>
       <View style={[styles.tabBadge, { backgroundColor: badgeColor }]}>
         <Text style={styles.tabBadgeText}>{badge}</Text>
       </View>

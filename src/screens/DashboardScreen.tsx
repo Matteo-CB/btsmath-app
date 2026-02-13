@@ -8,6 +8,7 @@ import {
   RefreshControl,
   ActivityIndicator,
 } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { getCurrentUser, logout } from "../lib/auth";
 import { getDailyQuests, getHighScores } from "../lib/db";
@@ -82,12 +83,18 @@ export default function DashboardScreen({ onLogout, onStartGame, onGoToCourses, 
               <Text style={styles.levelText}>{user.level}</Text>
             </View>
             <View style={styles.heroInfo}>
-              <Text style={styles.greeting}>Bonjour, {user.username} 👋</Text>
-              <Text style={styles.streakText}>
-                {user.streak > 0
-                  ? `🔥 Série de ${user.streak} jours`
-                  : "Commencez votre série !"}
-              </Text>
+              <View style={{flexDirection:'row',alignItems:'center',gap:4}}>
+                <Text style={styles.greeting}>Bonjour, {user.username}</Text>
+                <Ionicons name="hand-left" size={20} color="#fff" />
+              </View>
+              <View style={{flexDirection:'row',alignItems:'center',gap:4}}>
+                {user.streak > 0 && <Ionicons name="flame" size={16} color="rgba(255,255,255,0.9)" />}
+                <Text style={styles.streakText}>
+                  {user.streak > 0
+                    ? `Série de ${user.streak} jours`
+                    : "Commencez votre série !"}
+                </Text>
+              </View>
             </View>
           </View>
         </View>
@@ -113,7 +120,10 @@ export default function DashboardScreen({ onLogout, onStartGame, onGoToCourses, 
             onPress={onGoToCourses}
             activeOpacity={0.7}
           >
-            <Text style={styles.sectionTitle}>📚 Continuer à apprendre</Text>
+            <View style={{flexDirection:'row',alignItems:'center',gap:6}}>
+              <Ionicons name="library" size={20} color={colors.text} />
+              <Text style={styles.sectionTitle}>Continuer à apprendre</Text>
+            </View>
             <Text style={styles.sectionArrow}>→</Text>
           </TouchableOpacity>
 
@@ -135,8 +145,14 @@ export default function DashboardScreen({ onLogout, onStartGame, onGoToCourses, 
                   <Text style={styles.courseName} numberOfLines={1}>{course.name}</Text>
                   <Text style={styles.courseDesc} numberOfLines={2}>{course.description}</Text>
                   <View style={styles.courseMeta}>
-                    <Text style={styles.courseMetaText}>📖 {totalLessons} leçons</Text>
-                    <Text style={styles.courseMetaText}>⏱️ {totalDuration} min</Text>
+                    <View style={{flexDirection:'row',alignItems:'center',gap:2}}>
+                      <Ionicons name="book" size={10} color={colors.textMuted} />
+                      <Text style={styles.courseMetaText}>{totalLessons} leçons</Text>
+                    </View>
+                    <View style={{flexDirection:'row',alignItems:'center',gap:2}}>
+                      <Ionicons name="time" size={10} color={colors.textMuted} />
+                      <Text style={styles.courseMetaText}>{totalDuration} min</Text>
+                    </View>
                   </View>
                 </TouchableOpacity>
               );
@@ -147,7 +163,10 @@ export default function DashboardScreen({ onLogout, onStartGame, onGoToCourses, 
         {/* Game Modes */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>🎮 Modes de jeu</Text>
+            <View style={{flexDirection:'row',alignItems:'center',gap:6}}>
+              <Ionicons name="game-controller" size={20} color={colors.text} />
+              <Text style={styles.sectionTitle}>Modes de jeu</Text>
+            </View>
             <View style={styles.badge}>
               <Text style={styles.badgeText}>{GAME_MODES.length} modes</Text>
             </View>
@@ -160,7 +179,7 @@ export default function DashboardScreen({ onLogout, onStartGame, onGoToCourses, 
               onPress={() => onStartGame(mode.id)}
             >
               <View style={styles.modeIcon}>
-                <Text style={styles.modeIconText}>{mode.icon}</Text>
+                <Ionicons name={mode.icon as any} size={28} color="#FF5722" />
               </View>
               <View style={styles.modeInfo}>
                 <View style={styles.modeHeader}>
@@ -179,19 +198,22 @@ export default function DashboardScreen({ onLogout, onStartGame, onGoToCourses, 
                 <Text style={styles.modeDescription}>{mode.description}</Text>
                 <View style={styles.modeRules}>
                   {mode.rules.timeLimit && (
-                    <Text style={styles.modeRule}>
-                      ⏱️ {Math.floor(mode.rules.timeLimit / 60)} min
-                    </Text>
+                    <View style={{flexDirection:'row',alignItems:'center',gap:3}}>
+                      <Ionicons name="time" size={12} color={colors.textMuted} />
+                      <Text style={styles.modeRule}>{Math.floor(mode.rules.timeLimit / 60)} min</Text>
+                    </View>
                   )}
                   {mode.rules.questionCount && (
-                    <Text style={styles.modeRule}>
-                      📝 {mode.rules.questionCount} questions
-                    </Text>
+                    <View style={{flexDirection:'row',alignItems:'center',gap:3}}>
+                      <Ionicons name="document-text" size={12} color={colors.textMuted} />
+                      <Text style={styles.modeRule}>{mode.rules.questionCount} questions</Text>
+                    </View>
                   )}
                   {mode.rules.maxErrors && (
-                    <Text style={styles.modeRule}>
-                      ❤️ {mode.rules.maxErrors} vies
-                    </Text>
+                    <View style={{flexDirection:'row',alignItems:'center',gap:3}}>
+                      <Ionicons name="heart" size={12} color={colors.textMuted} />
+                      <Text style={styles.modeRule}>{mode.rules.maxErrors} vies</Text>
+                    </View>
                   )}
                 </View>
               </View>
@@ -201,23 +223,38 @@ export default function DashboardScreen({ onLogout, onStartGame, onGoToCourses, 
 
         {/* Stats Grid */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>📊 Statistiques</Text>
+          <View style={{flexDirection:'row',alignItems:'center',gap:6}}>
+            <Ionicons name="stats-chart" size={20} color={colors.text} />
+            <Text style={styles.sectionTitle}>Statistiques</Text>
+          </View>
           <View style={styles.statsGrid}>
             <View style={[styles.statCard, { backgroundColor: "#fff7ed" }]}>
               <Text style={[styles.statValue, { color: "#FF5722" }]}>{user.streak}</Text>
-              <Text style={styles.statLabel}>🔥 Série</Text>
+              <View style={{flexDirection:'row',alignItems:'center',gap:4,marginTop:spacing.xs}}>
+                <Ionicons name="flame" size={14} color="#FF5722" />
+                <Text style={styles.statLabel}>Série</Text>
+              </View>
             </View>
             <View style={[styles.statCard, { backgroundColor: "#f0fdf4" }]}>
               <Text style={[styles.statValue, { color: "#16a34a" }]}>{user.level}</Text>
-              <Text style={styles.statLabel}>⭐ Niveau</Text>
+              <View style={{flexDirection:'row',alignItems:'center',gap:4,marginTop:spacing.xs}}>
+                <Ionicons name="star" size={14} color="#16a34a" />
+                <Text style={styles.statLabel}>Niveau</Text>
+              </View>
             </View>
             <View style={[styles.statCard, { backgroundColor: "#eff6ff" }]}>
               <Text style={[styles.statValue, { color: "#2563eb" }]}>{user.xp.toLocaleString()}</Text>
-              <Text style={styles.statLabel}>💎 XP Total</Text>
+              <View style={{flexDirection:'row',alignItems:'center',gap:4,marginTop:spacing.xs}}>
+                <Ionicons name="diamond" size={14} color="#2563eb" />
+                <Text style={styles.statLabel}>XP Total</Text>
+              </View>
             </View>
             <View style={[styles.statCard, { backgroundColor: "#fdf4ff" }]}>
               <Text style={[styles.statValue, { color: "#a855f7" }]}>{highScores.length}</Text>
-              <Text style={styles.statLabel}>🏆 Records</Text>
+              <View style={{flexDirection:'row',alignItems:'center',gap:4,marginTop:spacing.xs}}>
+                <Ionicons name="trophy" size={14} color="#a855f7" />
+                <Text style={styles.statLabel}>Records</Text>
+              </View>
             </View>
           </View>
         </View>

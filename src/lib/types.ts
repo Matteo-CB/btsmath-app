@@ -123,7 +123,7 @@ export const GAME_MODES: GameModeConfig[] = [
     id: "training",
     name: "Entraînement",
     description: "Exercices libres par thème, sans pression",
-    icon: "📚",
+    icon: "library",
     rules: {
       mixSubjects: false,
       difficultyProgression: false,
@@ -135,7 +135,7 @@ export const GAME_MODES: GameModeConfig[] = [
     id: "sprint",
     name: "Sprint",
     description: "10 exercices en 5 minutes, tous sujets",
-    icon: "⚡",
+    icon: "flash",
     rules: {
       timeLimit: 300,
       questionCount: 10,
@@ -149,7 +149,7 @@ export const GAME_MODES: GameModeConfig[] = [
     id: "survival",
     name: "Survie",
     description: "Enchaînez jusqu'à 3 erreurs",
-    icon: "❤️",
+    icon: "heart",
     rules: {
       maxErrors: 3,
       mixSubjects: true,
@@ -162,7 +162,7 @@ export const GAME_MODES: GameModeConfig[] = [
     id: "duel",
     name: "Duel",
     description: "Battez le fantôme IA",
-    icon: "⚔️",
+    icon: "people",
     rules: {
       questionCount: 10,
       mixSubjects: true,
@@ -175,7 +175,7 @@ export const GAME_MODES: GameModeConfig[] = [
     id: "boss",
     name: "Boss",
     description: "Un exercice complexe multi-notions",
-    icon: "👑",
+    icon: "shield",
     rules: {
       questionCount: 1,
       mixSubjects: true,
@@ -189,7 +189,7 @@ export const GAME_MODES: GameModeConfig[] = [
     id: "express",
     name: "Révision Express",
     description: "5 questions sur vos points faibles",
-    icon: "🎯",
+    icon: "locate",
     rules: {
       questionCount: 5,
       mixSubjects: true,
@@ -202,7 +202,7 @@ export const GAME_MODES: GameModeConfig[] = [
     id: "exam",
     name: "Examen Blanc",
     description: "Simulation d'épreuve complète",
-    icon: "📝",
+    icon: "document-text",
     rules: {
       timeLimit: 3600,
       questionCount: 20,

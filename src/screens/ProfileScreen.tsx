@@ -7,6 +7,7 @@ import {
   RefreshControl,
   ActivityIndicator,
 } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { getCurrentUser } from "../lib/auth";
 import { getUserAchievements, getUserStats, getUserRank } from "../lib/db";
@@ -96,17 +97,17 @@ export default function ProfileScreen() {
       <View style={styles.content}>
         {/* Stats Grid */}
         <View style={styles.statsGrid}>
-          <StatCard icon="📝" value={stats.totalExercises} label="Exercices" color="#10b981" />
-          <StatCard icon="🎮" value={stats.totalGames} label="Parties" color="#3b82f6" />
-          <StatCard icon="💎" value={stats.perfectScores} label="Parfaits" color="#8b5cf6" />
-          <StatCard icon="🔥" value={`${stats.streak} j`} label="Streak" color="#f97316" />
+          <StatCard icon="document-text" value={stats.totalExercises} label="Exercices" color="#10b981" />
+          <StatCard icon="game-controller" value={stats.totalGames} label="Parties" color="#3b82f6" />
+          <StatCard icon="diamond" value={stats.perfectScores} label="Parfaits" color="#8b5cf6" />
+          <StatCard icon="flame" value={`${stats.streak} j`} label="Streak" color="#f97316" />
           <StatCard
-            icon="⏱️"
+            icon="time"
             value={`${Math.floor(stats.totalPlayTime / 60)}h${stats.totalPlayTime % 60}m`}
             label="Temps joué"
             color="#64748b"
           />
-          <StatCard icon="📜" value={stats.questsCompleted} label="Quêtes" color="#f59e0b" />
+          <StatCard icon="reader" value={stats.questsCompleted} label="Quêtes" color="#f59e0b" />
         </View>
 
         {/* Achievements Progress */}
@@ -124,13 +125,15 @@ export default function ProfileScreen() {
         {/* Achievements by Category */}
         {(["progression", "streak", "score", "special"] as const).map((category) => (
           <View key={category} style={styles.section}>
-            <Text style={styles.categoryTitle}>
-              {category === "progression" && "📈 "}
-              {category === "streak" && "🔥 "}
-              {category === "score" && "🏆 "}
-              {category === "special" && "⭐ "}
-              {getCategoryName(category)}
-            </Text>
+            <View style={{flexDirection:'row',alignItems:'center',gap:6,marginBottom:spacing.md}}>
+              {category === "progression" && <Ionicons name="trending-up" size={18} color={colors.text} />}
+              {category === "streak" && <Ionicons name="flame" size={18} color={colors.text} />}
+              {category === "score" && <Ionicons name="trophy" size={18} color={colors.text} />}
+              {category === "special" && <Ionicons name="star" size={18} color={colors.text} />}
+              <Text style={[styles.categoryTitle,{marginBottom:0}]}>
+                {getCategoryName(category)}
+              </Text>
+            </View>
 
             <View style={styles.achievementsList}>
               {groupedAchievements[category]?.map((achievement) => {
@@ -148,9 +151,11 @@ export default function ProfileScreen() {
                       styles.achievementIcon,
                       { backgroundColor: isUnlocked ? achievement.color : "#e2e8f0" },
                     ]}>
-                      <Text style={styles.achievementIconText}>
-                        {isUnlocked ? achievement.icon : "🔒"}
-                      </Text>
+                      {isUnlocked ? (
+                        <Ionicons name={achievement.icon as any} size={24} color="#fff" />
+                      ) : (
+                        <Ionicons name="lock-closed" size={24} color="#94a3b8" />
+                      )}
                     </View>
                     <View style={styles.achievementInfo}>
                       <Text style={[
@@ -196,7 +201,7 @@ function StatCard({ icon, value, label, color }: {
 }) {
   return (
     <View style={styles.statCard}>
-      <Text style={styles.statIcon}>{icon}</Text>
+      <Ionicons name={icon as any} size={24} color={color} style={{marginBottom:spacing.xs}} />
       <Text style={[styles.statValue, { color }]}>{value}</Text>
       <Text style={styles.statLabel}>{label}</Text>
     </View>

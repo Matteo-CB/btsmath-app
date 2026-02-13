@@ -8,6 +8,7 @@ import {
   Animated,
   Dimensions,
 } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { FLASHCARDS, FLASHCARD_SUBJECTS } from "../lib/flashcards";
 import { colors, spacing, borderRadius, fontSize, fontWeight } from "../components/theme";
@@ -90,7 +91,7 @@ export default function FlashcardsScreen() {
     <ScrollView style={styles.container}>
       {/* Hero */}
       <LinearGradient colors={["#8b5cf6", "#a78bfa", "#c4b5fd"]} style={styles.hero}>
-        <Text style={styles.heroIcon}>🃏</Text>
+        <Ionicons name="albums" size={50} color="#fff" />
         <Text style={styles.heroTitle}>Flashcards</Text>
         <Text style={styles.heroSubtitle}>
           Mémorisez les formules et concepts essentiels
@@ -150,21 +151,27 @@ export default function FlashcardsScreen() {
             style={[styles.modeButton, studyMode === "browse" && styles.modeButtonActive]}
             onPress={() => setStudyMode("browse")}
           >
-            <Text style={[styles.modeButtonText, studyMode === "browse" && styles.modeButtonTextActive]}>
-              📖 Parcourir
-            </Text>
+            <View style={{flexDirection:'row',alignItems:'center',gap:4}}>
+              <Ionicons name="book" size={16} color={studyMode === "browse" ? "#8b5cf6" : colors.textSecondary} />
+              <Text style={[styles.modeButtonText, studyMode === "browse" && styles.modeButtonTextActive]}>
+                Parcourir
+              </Text>
+            </View>
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.modeButton, studyMode === "study" && styles.modeButtonActive]}
             onPress={() => setStudyMode("study")}
           >
-            <Text style={[styles.modeButtonText, studyMode === "study" && styles.modeButtonTextActive]}>
-              🎯 Révision
-            </Text>
+            <View style={{flexDirection:'row',alignItems:'center',gap:4}}>
+              <Ionicons name="locate" size={16} color={studyMode === "study" ? "#8b5cf6" : colors.textSecondary} />
+              <Text style={[styles.modeButtonText, studyMode === "study" && styles.modeButtonTextActive]}>
+                Révision
+              </Text>
+            </View>
           </TouchableOpacity>
           {knownCards.size > 0 && (
             <TouchableOpacity style={styles.resetButton} onPress={resetProgress}>
-              <Text style={styles.resetButtonText}>🔄</Text>
+              <Ionicons name="refresh" size={20} color="#ef4444" />
             </TouchableOpacity>
           )}
         </View>
@@ -197,7 +204,10 @@ export default function FlashcardsScreen() {
                   </View>
                   {knownCards.has(currentCard.id) && (
                     <View style={styles.cardBackTag}>
-                      <Text style={styles.cardBackTagText}>✓ Maîtrisée</Text>
+                      <View style={{flexDirection:'row',alignItems:'center',gap:3}}>
+                      <Ionicons name="checkmark" size={12} color="#fff" />
+                      <Text style={styles.cardBackTagText}>Maîtrisée</Text>
+                    </View>
                     </View>
                   )}
                 </View>
@@ -221,7 +231,7 @@ export default function FlashcardsScreen() {
           </View>
         ) : (
           <View style={styles.emptyState}>
-            <Text style={styles.emptyIcon}>🎉</Text>
+            <Ionicons name="happy" size={50} color={colors.text} />
             <Text style={styles.emptyTitle}>Félicitations !</Text>
             <Text style={styles.emptyText}>
               Vous avez révisé toutes les cartes de cette catégorie.
@@ -239,7 +249,10 @@ export default function FlashcardsScreen() {
             {studyMode === "study" && currentCard && !knownCards.has(currentCard.id) && (
               <TouchableOpacity style={styles.knownButton} onPress={markAsKnown}>
                 <LinearGradient colors={["#10b981", "#34d399"]} style={styles.knownButtonGradient}>
-                  <Text style={styles.knownButtonText}>✓ Je connais</Text>
+                  <View style={{flexDirection:'row',alignItems:'center',gap:4}}>
+                    <Ionicons name="checkmark" size={16} color="#fff" />
+                    <Text style={styles.knownButtonText}>Je connais</Text>
+                  </View>
                 </LinearGradient>
               </TouchableOpacity>
             )}
@@ -274,7 +287,10 @@ export default function FlashcardsScreen() {
 
         {/* Tip */}
         <View style={styles.tipBox}>
-          <Text style={styles.tipTitle}>💡 Conseil de révision</Text>
+          <View style={{flexDirection:'row',alignItems:'center',gap:6}}>
+            <Ionicons name="bulb" size={16} color="#7c3aed" />
+            <Text style={styles.tipTitle}>Conseil de révision</Text>
+          </View>
           <Text style={styles.tipText}>
             Utilisez la méthode de répétition espacée : révisez les cartes difficiles plus souvent et les cartes maîtrisées moins fréquemment.
           </Text>
