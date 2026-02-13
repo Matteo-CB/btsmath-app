@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Animated,
 } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { colors } from "../theme";
 
 interface QuizQuestion {
@@ -347,7 +348,7 @@ export function MiniExercise({
 
       {showHint && !checked && hint && (
         <View style={styles.hintBox}>
-          <Text style={styles.hintText}>💡 {hint}</Text>
+          <Text style={styles.hintText}><Ionicons name="bulb" size={16} color="#f59e0b" /> {hint}</Text>
         </View>
       )}
 

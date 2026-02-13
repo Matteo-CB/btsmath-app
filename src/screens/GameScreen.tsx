@@ -10,6 +10,7 @@ import {
   Alert,
   Platform,
 } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { getCurrentUser, updateUserXp } from "../lib/auth";
 import { createGameSession, updateGameSession, saveHighScore } from "../lib/db";
@@ -52,6 +53,7 @@ export default function GameScreen({ mode, onExit }: Props) {
   const [xpEarned, setXpEarned] = useState(0);
 
   const shakeAnim = useRef(new Animated.Value(0)).current;
+  const scoreRef = useRef(0);
   const modeConfig = GAME_MODES.find((m) => m.id === mode)!;
   const modeColor = MODE_COLORS[mode] || MODE_COLORS.training;
 
@@ -119,16 +121,20 @@ export default function GameScreen({ mode, onExit }: Props) {
     ]).start();
   };
 
+  // Keep scoreRef in sync with score state
+  useEffect(() => { scoreRef.current = score; }, [score]);
+
   const endGame = async () => {
     if (!user || !sessionId || isFinished) return;
     setIsFinished(true);
 
     const duration = Math.floor((Date.now() - startTime) / 1000);
-    const earnedXp = Math.floor(score * modeConfig.rules.xpMultiplier);
+    const currentScore = scoreRef.current;
+    const earnedXp = Math.floor(currentScore * modeConfig.rules.xpMultiplier);
 
     await updateGameSession(
       sessionId,
-      score,
+      currentScore,
       exercises.length,
       correctAnswers,
       errors,
@@ -137,7 +143,7 @@ export default function GameScreen({ mode, onExit }: Props) {
     );
 
     await updateUserXp(user.id, earnedXp);
-    await saveHighScore(user.id, mode, score);
+    await saveHighScore(user.id, mode, currentScore);
 
     setXpEarned(earnedXp);
   };
@@ -207,7 +213,7 @@ export default function GameScreen({ mode, onExit }: Props) {
       <View style={styles.container}>
         <View style={styles.resultContainer}>
           <View style={[styles.resultIcon, { backgroundColor: modeColor.primary }]}>
-            <Text style={styles.resultIconText}>🏆</Text>
+            <Ionicons name="trophy" size={40} color="#fff" />
           </View>
           <Text style={styles.resultTitle}>Partie terminée !</Text>
 
@@ -233,7 +239,10 @@ export default function GameScreen({ mode, onExit }: Props) {
           <View style={styles.resultActions}>
             <TouchableOpacity style={styles.replayButton} onPress={initGame}>
               <LinearGradient colors={[modeColor.primary, modeColor.primary + "dd"]} style={styles.buttonGradient}>
-                <Text style={styles.buttonText}>🔄 Rejouer</Text>
+                <View style={{flexDirection:'row',alignItems:'center',gap:6}}>
+                  <Ionicons name="refresh" size={16} color="#fff" />
+                  <Text style={styles.buttonText}>Rejouer</Text>
+                </View>
               </LinearGradient>
             </TouchableOpacity>
             <TouchableOpacity style={styles.exitButton} onPress={onExit}>
@@ -254,10 +263,13 @@ export default function GameScreen({ mode, onExit }: Props) {
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity style={styles.backButton} onPress={onExit}>
-          <Text style={styles.backButtonText}>←</Text>
+          <Ionicons name="arrow-back" size={20} color={colors.textSecondary} />
         </TouchableOpacity>
         <View style={styles.headerInfo}>
-          <Text style={styles.headerTitle}>{modeConfig.icon} {modeConfig.name}</Text>
+          <View style={{flexDirection:'row',alignItems:'center',gap:6}}>
+            <Ionicons name={modeConfig.icon as any} size={18} color={modeColor.primary} />
+            <Text style={styles.headerTitle}>{modeConfig.name}</Text>
+          </View>
           <Text style={styles.headerSubtitle}>
             Question {currentIndex + 1}/{exercises.length}
           </Text>
@@ -265,7 +277,10 @@ export default function GameScreen({ mode, onExit }: Props) {
         <View style={styles.headerStats}>
           {combo >= 2 && (
             <View style={styles.comboBadge}>
-              <Text style={styles.comboText}>🔥 x{combo}</Text>
+              <View style={{flexDirection:'row',alignItems:'center',gap:3}}>
+                <Ionicons name="flame" size={12} color="#fff" />
+                <Text style={styles.comboText}>x{combo}</Text>
+              </View>
             </View>
           )}
           {timeRemaining !== null && (
@@ -290,7 +305,7 @@ export default function GameScreen({ mode, onExit }: Props) {
       {modeConfig.rules.maxErrors && (
         <View style={styles.livesContainer}>
           {Array.from({ length: modeConfig.rules.maxErrors }).map((_, i) => (
-            <Text key={i} style={[styles.life, i < errors && styles.lifeLost]}>❤️</Text>
+            <Ionicons key={i} name="heart" size={20} color={i < errors ? "rgba(239,68,68,0.3)" : "#ef4444"} />
           ))}
         </View>
       )}
@@ -317,14 +332,22 @@ export default function GameScreen({ mode, onExit }: Props) {
       <View style={styles.answerSection}>
         {feedback ? (
           <View style={[styles.feedbackBox, feedback.correct ? styles.feedbackCorrect : styles.feedbackIncorrect]}>
-            <Text style={styles.feedbackIcon}>{feedback.correct ? "✓" : "✗"}</Text>
+            <Ionicons
+              name={feedback.correct ? "checkmark" : "close"}
+              size={24}
+              color={feedback.correct ? "#10b981" : "#ef4444"}
+              style={{marginRight:spacing.md}}
+            />
             <View>
               <Text style={styles.feedbackTitle}>{feedback.correct ? "Correct !" : "Incorrect"}</Text>
               {!feedback.correct && <Text style={styles.feedbackMessage}>{feedback.message}</Text>}
             </View>
             {feedback.correct && combo >= 2 && (
               <View style={styles.comboFeedback}>
-                <Text style={styles.comboFeedbackText}>🔥 Combo x{combo} !</Text>
+                <View style={{flexDirection:'row',alignItems:'center',gap:4}}>
+                  <Ionicons name="flame" size={14} color="#fff" />
+                  <Text style={styles.comboFeedbackText}>Combo x{combo} !</Text>
+                </View>
               </View>
             )}
           </View>

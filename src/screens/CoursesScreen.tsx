@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -7,7 +7,9 @@ import {
   TouchableOpacity,
   SafeAreaView,
 } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
+import { useRoute } from "@react-navigation/native";
 import { colors, spacing, borderRadius, fontSize, fontWeight } from "../components/theme";
 import { COURSES, getCourseById, getTotalLessons, type Course, type Lesson, type LessonContent } from "../lib/courses";
 import {
@@ -25,9 +27,22 @@ import {
 type ViewMode = "list" | "course" | "lesson";
 
 export default function CoursesScreen() {
+  const route = useRoute();
   const [viewMode, setViewMode] = useState<ViewMode>("list");
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
+
+  // Open a specific course when navigated from Dashboard
+  useEffect(() => {
+    const params = route.params as { courseId?: string } | undefined;
+    if (params?.courseId) {
+      const course = getCourseById(params.courseId);
+      if (course) {
+        setSelectedCourse(course);
+        setViewMode("course");
+      }
+    }
+  }, [route.params]);
 
   const handleSelectCourse = (course: Course) => {
     setSelectedCourse(course);
@@ -82,7 +97,10 @@ export default function CoursesScreen() {
           colors={["#0f0f0f", "#1a1a1a"]}
           style={styles.header}
         >
-          <Text style={styles.headerTitle}>📚 Cours</Text>
+          <View style={{flexDirection:'row',alignItems:'center',gap:8}}>
+            <Ionicons name="library" size={24} color="#ffffff" />
+            <Text style={styles.headerTitle}>Cours</Text>
+          </View>
           <Text style={styles.headerSubtitle}>
             Maîtrisez toutes les notions du programme BTS SIO
           </Text>
@@ -114,12 +132,18 @@ export default function CoursesScreen() {
                 <Text style={styles.courseName}>{course.name}</Text>
                 <Text style={styles.courseDesc}>{course.description}</Text>
                 <View style={styles.courseMeta}>
-                  <Text style={styles.courseMetaText}>
-                    📖 {course.lessons.length} leçons
-                  </Text>
-                  <Text style={styles.courseMetaText}>
-                    ⏱️ {course.lessons.reduce((sum, l) => sum + l.duration, 0)} min
-                  </Text>
+                  <View style={{flexDirection:'row',alignItems:'center',gap:3}}>
+                    <Ionicons name="book" size={12} color={colors.textMuted} />
+                    <Text style={styles.courseMetaText}>
+                      {course.lessons.length} leçons
+                    </Text>
+                  </View>
+                  <View style={{flexDirection:'row',alignItems:'center',gap:3}}>
+                    <Ionicons name="time" size={12} color={colors.textMuted} />
+                    <Text style={styles.courseMetaText}>
+                      {course.lessons.reduce((sum, l) => sum + l.duration, 0)} min
+                    </Text>
+                  </View>
                 </View>
               </View>
               <Text style={[styles.courseArrow, { color: course.color }]}>→</Text>
@@ -177,9 +201,13 @@ function CourseView({
               </View>
               <View style={styles.lessonInfo}>
                 <Text style={styles.lessonTitle}>{lesson.title}</Text>
-                <Text style={styles.lessonMeta}>
-                  ⏱️ {lesson.duration} min • 📝 {lesson.content.length} notions
-                </Text>
+                <View style={{flexDirection:'row',alignItems:'center',gap:4}}>
+                  <Ionicons name="time" size={12} color={colors.textMuted} />
+                  <Text style={styles.lessonMeta}>{lesson.duration} min</Text>
+                  <Text style={styles.lessonMeta}>•</Text>
+                  <Ionicons name="document-text" size={12} color={colors.textMuted} />
+                  <Text style={styles.lessonMeta}>{lesson.content.length} notions</Text>
+                </View>
               </View>
               <Text style={styles.lessonArrow}>→</Text>
             </TouchableOpacity>
@@ -229,15 +257,29 @@ function LessonView({
 
   const getTypeLabel = (type: string) => {
     switch (type) {
-      case "definition": return "📘 Définition";
-      case "theorem": return "📐 Théorème";
-      case "property": return "📋 Propriété";
-      case "example": return "💡 Exemple";
-      case "method": return "🔧 Méthode";
-      case "warning": return "⚠️ Attention";
-      case "formula": return "📝 Formule";
-      case "interactive": return "🎮 Interactif";
-      default: return "📄 Note";
+      case "definition": return "Définition";
+      case "theorem": return "Théorème";
+      case "property": return "Propriété";
+      case "example": return "Exemple";
+      case "method": return "Méthode";
+      case "warning": return "Attention";
+      case "formula": return "Formule";
+      case "interactive": return "Interactif";
+      default: return "Note";
+    }
+  };
+
+  const getTypeIcon = (type: string): string => {
+    switch (type) {
+      case "definition": return "book";
+      case "theorem": return "shapes";
+      case "property": return "clipboard";
+      case "example": return "bulb";
+      case "method": return "build";
+      case "warning": return "warning";
+      case "formula": return "create";
+      case "interactive": return "game-controller";
+      default: return "document";
     }
   };
 
@@ -342,7 +384,10 @@ function LessonView({
           <Text style={styles.lessonBadgeText}>Leçon {currentIndex + 1}</Text>
         </View>
         <Text style={styles.lessonViewTitle}>{lesson.title}</Text>
-        <Text style={styles.lessonDuration}>⏱️ {lesson.duration} min de lecture</Text>
+        <View style={{flexDirection:'row',alignItems:'center',gap:4,marginBottom:spacing.lg}}>
+          <Ionicons name="time" size={14} color={colors.textMuted} />
+          <Text style={[styles.lessonDuration,{marginBottom:0}]}>{lesson.duration} min de lecture</Text>
+        </View>
 
         {lesson.content.map((item, index) => {
           const contentStyle = getContentStyle(item.type);
@@ -361,9 +406,12 @@ function LessonView({
                 isInteractive && styles.interactiveCard,
               ]}
             >
-              <Text style={[styles.contentType, isFormula && { color: "#a0a0a0" }]}>
-                {getTypeLabel(item.type)}
-              </Text>
+              <View style={{flexDirection:'row',alignItems:'center',gap:4}}>
+                <Ionicons name={getTypeIcon(item.type) as any} size={14} color={isFormula ? "#a0a0a0" : "#666666"} />
+                <Text style={[styles.contentType, isFormula && { color: "#a0a0a0" }]}>
+                  {getTypeLabel(item.type)}
+                </Text>
+              </View>
               {item.title && (
                 <Text style={[styles.contentTitle, isFormula && { color: "#ffffff" }]}>
                   {item.title}
@@ -395,7 +443,7 @@ function LessonView({
           )}
           {!hasNext && (
             <View style={styles.completedBox}>
-              <Text style={styles.completedIcon}>✅</Text>
+              <Ionicons name="checkmark-circle" size={48} color="#16a34a" />
               <Text style={styles.completedText}>Cours terminé !</Text>
             </View>
           )}

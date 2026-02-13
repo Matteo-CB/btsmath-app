@@ -77,17 +77,38 @@ export async function getUserById(userId: number): Promise<User | null> {
   return data as User | null;
 }
 
-export async function updateUserXp(userId: number, xpToAdd: number): Promise<void> {
-  const user = await getUserById(userId);
-  if (!user) return;
+export async function updateUserXp(userId: number, xpToAdd: number): Promise<boolean> {
+  try {
+    const user = await getUserById(userId);
+    if (!user) {
+      console.error("[XP] User not found:", userId);
+      return false;
+    }
 
-  const newXp = user.xp + xpToAdd;
-  const newLevel = Math.floor(newXp / 100) + 1;
+    if (xpToAdd <= 0) {
+      console.log("[XP] No XP to add (xpToAdd =", xpToAdd, ")");
+      return true;
+    }
 
-  await supabase
-    .from("users")
-    .update({ xp: newXp, level: newLevel })
-    .eq("id", userId);
+    const newXp = user.xp + xpToAdd;
+    const newLevel = Math.floor(newXp / 100) + 1;
+
+    const { error } = await supabase
+      .from("users")
+      .update({ xp: newXp, level: newLevel })
+      .eq("id", userId);
+
+    if (error) {
+      console.error("[XP] Failed to update XP:", error.message, error.code);
+      return false;
+    }
+
+    console.log("[XP] Updated:", user.xp, "->", newXp, "(+", xpToAdd, ") Level:", newLevel);
+    return true;
+  } catch (e) {
+    console.error("[XP] Exception updating XP:", e);
+    return false;
+  }
 }
 
 export async function updateStreak(userId: number): Promise<void> {

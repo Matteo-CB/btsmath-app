@@ -53,7 +53,7 @@ export async function createGameSession(
   userId: number,
   mode: string
 ): Promise<number> {
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("game_sessions")
     .insert({
       user_id: userId,
@@ -63,6 +63,9 @@ export async function createGameSession(
     .select("id")
     .single();
 
+  if (error) {
+    console.error("[Game] Failed to create session:", error.message);
+  }
   return data?.id || 0;
 }
 
